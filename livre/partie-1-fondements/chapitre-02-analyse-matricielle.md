@@ -4,6 +4,68 @@
 
 L'analyse matricielle est fondamentale en machine learning. Les matrices permettent de représenter les données, les transformations linéaires et les modèles. Ce chapitre couvre les outils matriciels essentiels pour comprendre les algorithmes d'apprentissage.
 
+## 🗺️ Carte Mentale : Analyse Matricielle
+
+```
+                    ANALYSE MATRICIELLE
+                            │
+        ┌───────────────────┼───────────────────┐
+        │                   │                   │
+   DÉCOMPOSITIONS        NORMES            APPLICATIONS
+        │                   │                   │
+    ┌───┴───┐           ┌───┴───┐           ┌───┴───┐
+    │       │           │       │           │       │
+  SVD    Valeurs     Frobenius  Spectrale  PCA   Compression
+         Propres       │         │               d'Images
+    │       │          L₂        σ_max          │
+  A=UΣVᵀ  A=QΛQᵀ     Matrix     ‖A‖₂       Réduction
+                      Norm                  Dimension
+```
+
+## 📊 Tableau Comparatif : Décompositions Matricielles
+
+| **Décomposition** | **Formule** | **Conditions** | **Complexité** | **Applications ML** |
+|------------------|------------|---------------|---------------|-------------------|
+| **Valeurs propres** | A = QΛQᵀ | A symétrique | O(n³) | PCA, Spectral clustering |
+| **SVD** | A = UΣVᵀ | Toute matrice | O(mn²) | Recommandation, compression |
+| **QR** | A = QR | Toute matrice | O(mn²) | Régression, moindres carrés |
+| **Cholesky** | A = LLᵀ | A définie positive | O(n³/3) | Simulation, optimisation |
+| **LU** | A = LU | A inversible | O(n³/3) | Systèmes linéaires |
+
+## 📐 Visualisation : SVD (Décomposition en Valeurs Singulières)
+
+```
+                DÉCOMPOSITION SVD : A = U Σ Vᵀ
+                
+    A           =       U          ×      Σ        ×       Vᵀ
+  (m×n)               (m×m)            (m×n)             (n×n)
+                                                    
+┌─────────┐     ┌──────────┐     ┌────────────┐    ┌──────────┐
+│         │     │          │     │σ₁  0   0 …│    │          │
+│    A    │  =  │    U     │  ×  │0  σ₂  0  │ ×  │    Vᵀ    │
+│         │     │          │     │0   0  σ₃ │    │          │
+│         │     │          │     │⋮   ⋮   ⋮ │    │          │
+└─────────┘     └──────────┘     │0   0   0 │    └──────────┘
+                                 └────────────┘
+Données         Rotation         Étirement      Rotation
+originales      gauche           (scaling)      droite
+
+Interprétation géométrique :
+  1. Vᵀ : Rotation dans l'espace d'entrée
+  2. Σ  : Étirement selon les directions principales
+  3. U  : Rotation dans l'espace de sortie
+```
+
+## 🔢 Tableau des Normes Matricielles
+
+| **Norme** | **Définition** | **Formule** | **Interprétation** | **Usage ML** |
+|-----------|---------------|------------|-------------------|-------------|
+| **Frobenius** | ‖A‖_F | √(Σᵢⱼ aᵢⱼ²) | Norme L₂ des éléments | Régularisation |
+| **Spectrale** | ‖A‖₂ | σ_max(A) | Plus grande valeur singulière | Stabilité |
+| **Nucléaire** | ‖A‖_* | Σᵢ σᵢ(A) | Somme val. singulières | Rang faible |
+| **L₁** | ‖A‖₁ | max_j Σᵢ \|aᵢⱼ\| | Max somme colonnes | Sparsité |
+| **L∞** | ‖A‖∞ | max_i Σⱼ \|aᵢⱼ\| | Max somme lignes | Analyse erreur |
+
 ---
 
 ## 2.1 Notation et Faits de Base

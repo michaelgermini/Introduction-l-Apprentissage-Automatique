@@ -4,6 +4,177 @@
 
 Les arbres de décision et leurs extensions (forêts aléatoires, boosting) sont parmi les algorithmes les plus populaires en ML.
 
+## 🗺️ Carte Mentale : Méthodes à Base d'Arbres
+
+```
+                ALGORITHMES BASÉS SUR LES ARBRES
+                            │
+        ┌───────────────────┼───────────────────┐
+        │                   │                   │
+    ARBRE SIMPLE        BAGGING            BOOSTING
+        │                   │                   │
+    CART                Random           ┌───────┴───────┐
+        │               Forest           │               │
+    ┌───┴───┐              │          AdaBoost      Gradient
+    │       │          Ensemble        │            Boosting
+Classif. Régres.      parallèle    Séquentiel         │
+    │       │         (variance↓)    reweight      XGBoost
+  Gini    MSE            │          samples       LightGBM
+Entropy  MAE         Bootstrap         │           CatBoost
+                     + Random       Focus on
+                      Features      errors
+```
+
+## 📊 Tableau Comparatif : Arbres et Ensembles
+
+| **Méthode** | **Type** | **Biais** | **Variance** | **Vitesse** | **Interprétabilité** | **Usage** |
+|------------|---------|----------|-------------|-----------|-------------------|-----------|
+| **Arbre Simple** | Base | Moyen | ⬆️ Élevée | ⚡⚡⚡ Rapide | ✓✓✓ Excellente | Exploration |
+| **Random Forest** | Bagging | Moyen | ✓ Faible | ⚡⚡ Moyen | ⚠️ Moyenne | Production standard |
+| **AdaBoost** | Boosting | ✓ Faible | Moyen | ⚡⚡ Moyen | ⚠️ Difficile | Perf. élevée |
+| **XGBoost** | Gradient Boosting | ✓✓ Très faible | ✓ Faible | ⚡⚡ Moyen | ⚠️ Difficile | Compétitions |
+| **LightGBM** | Gradient Boosting | ✓✓ Très faible | ✓ Faible | ⚡⚡⚡ Rapide | ⚠️ Difficile | Big Data |
+
+## 📐 Visualisation : Arbre de Décision
+
+### Structure d'un Arbre Binaire
+
+```
+                    [Racine]
+                   Feature_3 ≤ 2.5 ?
+                    /          \
+                  OUI           NON
+                  /              \
+          [Nœud gauche]      [Nœud droit]
+         Feature_1 ≤ 5.0 ?  Feature_2 ≤ 3.5 ?
+            /      \           /        \
+          OUI      NON       OUI        NON
+          /         \        /           \
+    [Feuille]  [Feuille] [Feuille]  [Feuille]
+     Classe A   Classe B  Classe A   Classe C
+     (50/50)    (30/32)   (45/47)    (80/80)
+     Pureté:     Pureté:   Pureté:    Pureté:
+      100%        93.8%     95.7%      100%
+
+Notation :
+  - Nœud : Condition de split (feature + seuil)
+  - Feuille : Prédiction finale (classe majoritaire ou moyenne)
+  - (n_correct/n_total) : Échantillons dans la feuille
+```
+
+### Partitionnement de l'Espace
+
+```
+    Feature_2
+        │
+    10  │  ┌────────┬─────────┐
+        │  │        │         │
+     8  │  │   C    │    B    │  Split 1: Feature_2 = 7
+        │  │        │         │
+     6  │  ├────────┴─────────┤
+        │  │                  │  Split 2: Feature_1 = 5
+     4  │  │        A         │
+        │  │                  │
+     2  │  └──────────────────┘
+        │
+     0  └──────────────────────→ Feature_1
+        0    5         10
+
+Chaque région = une feuille de l'arbre
+Frontières de décision = orthogonales aux axes
+```
+
+## 🎯 Critères de Division
+
+### Pour Classification
+
+```
+┌───────────────────────────────────────────────────────┐
+│  GINI IMPURITY                                         │
+│  Gini = 1 - Σₖ pₖ²                                    │
+│                                                        │
+│  Exemple : Nœud avec [50 Class A, 30 Class B]         │
+│  p_A = 50/80 = 0.625                                  │
+│  p_B = 30/80 = 0.375                                  │
+│  Gini = 1 - (0.625² + 0.375²) = 0.469                │
+│                                                        │
+│  Nœud pur (une seule classe) → Gini = 0              │
+│  Nœud équilibré (50/50) → Gini = 0.5                 │
+└───────────────────────────────────────────────────────┘
+
+┌───────────────────────────────────────────────────────┐
+│  ENTROPY (Information Gain)                            │
+│  H = -Σₖ pₖ log₂(pₖ)                                  │
+│                                                        │
+│  Même exemple :                                        │
+│  H = -(0.625 log₂(0.625) + 0.375 log₂(0.375))        │
+│    ≈ 0.954                                            │
+│                                                        │
+│  Information Gain = H_parent - Σ (n_child/n) H_child  │
+└───────────────────────────────────────────────────────┘
+```
+
+### Pour Régression
+
+```
+┌───────────────────────────────────────────────────────┐
+│  MEAN SQUARED ERROR (MSE)                              │
+│  MSE = (1/n) Σᵢ (yᵢ - ȳ)²                            │
+│                                                        │
+│  Exemple : Nœud avec valeurs [1, 2, 5, 7, 9]         │
+│  ȳ = (1+2+5+7+9)/5 = 4.8                             │
+│  MSE = [(1-4.8)² + (2-4.8)² + ... + (9-4.8)²]/5      │
+│      = [14.44 + 7.84 + 0.04 + 4.84 + 17.64]/5        │
+│      = 8.96                                            │
+│                                                        │
+│  On cherche le split qui minimise : MSE_total         │
+│  MSE_total = (n_L/n)·MSE_L + (n_R/n)·MSE_R           │
+└───────────────────────────────────────────────────────┘
+```
+
+## 🌳 Comparaison Visuelle : Ensemble Methods
+
+```
+    ARBRE SIMPLE                RANDOM FOREST (Bagging)
+    
+         🌳                     🌳  🌳  🌳  🌳  🌳
+      Un arbre                  100 arbres
+      profond                   indépendants
+         │                            │
+    Variance élevée            Moyenne/Vote → Variance réduite
+    Overfitting                Meilleure généralisation
+
+
+    ADABOOST (Boosting)         GRADIENT BOOSTING
+    
+    🌱 → 🌱 → 🌱 → 🌱           🌱 → 🌱 → 🌱 → 🌱
+    t=1  t=2  t=3  t=4         t=1  t=2  t=3  t=4
+    │    │    │    │           │    │    │    │
+  Focus  sur   les  erreurs    Fit residuals à chaque étape
+  Reweight samples             Apprend gradient de la loss
+  Séquentiel                   Séquentiel
+```
+
+## 📈 Évolution de l'Erreur
+
+```
+    Erreur
+      │
+      │  ──── Arbre simple (test)
+      │ ╲
+  1.0 │  ╲     ──── Random Forest
+      │   ╲──────────────
+      │         ──── XGBoost
+  0.5 │          ╲╲
+      │            ╲╲╲____________
+      │               ╲╲╲╲╲╲╲╲╲╲╲
+  0.0 └─────────────────────────────→ Nombre d'arbres
+       1    10    50   100   500
+
+Random Forest : Converge rapidement, plateau
+XGBoost : Continue à améliorer, risque overfit si trop d'arbres
+```
+
 ---
 
 ## 10.1 Partitionnement Récursif

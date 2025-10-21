@@ -4,6 +4,133 @@
 
 Ce chapitre couvre les principales méthodes de classification linéaire : régression logistique, analyse discriminante linéaire, et machines à vecteurs de support.
 
+## 🗺️ Carte Mentale : Classification Linéaire
+
+```
+                CLASSIFICATION LINÉAIRE
+                         │
+        ┌────────────────┼────────────────┐
+        │                │                │
+   DISCRIMINATIVE    GÉNÉRATIVE       MARGIN-BASED
+        │                │                │
+    ┌───┴───┐        ┌───┴───┐          SVM
+    │       │        │       │           │
+ Logistic  Perceptron LDA    QDA    Max Margin
+ Regression    │        │     │          │
+    │      One-layer Fisher's Bayes  Hard/Soft
+  Softmax              │    Optimal   Margin
+                   Dimension         Kernel
+                   Reduction         Trick
+```
+
+## 📊 Tableau Comparatif des Méthodes
+
+| **Méthode** | **Approche** | **Hypothèse** | **Frontière** | **Probabilités** | **Avantages** | **Inconvénients** |
+|------------|-------------|--------------|--------------|-----------------|--------------|------------------|
+| **Logistic Regression** | Discriminative | Aucune | Linéaire | ✓ Oui | Simple, interprétable | Linéaire seulement |
+| **LDA** | Générative | Gaussien, Σ commune | Linéaire | ✓ Oui | Efficace, réduction dim. | Hypothèse forte |
+| **QDA** | Générative | Gaussien, Σₖ différentes | Quadratique | ✓ Oui | Plus flexible | Plus de paramètres |
+| **SVM** | Margin-based | Aucune | Linéaire/Non-linéaire | ✗ Non | Robuste, kernel trick | Pas de probabilités |
+| **Perceptron** | Discriminative | Séparable | Linéaire | ✗ Non | Simple, en ligne | Pas de convergence si non séparable |
+
+## 📐 Visualisation des Frontières de Décision
+
+### Classification Binaire : Espace 2D
+
+```
+    x₂
+     │                    RÉGRESSION LOGISTIQUE
+     │    Classe 1        ╱ Frontière linéaire
+     │  ●  ●  ●  ●      ╱  P(Y=1|x) = 0.5
+     │   ●  ●  ●       ╱
+     │  ●  ●  ●  ●    ╱
+     │ ────────────  ╱  ───────────
+     │          ○  ╱○  ○
+     │        ○  ╱  ○  ○  ○
+     │      ○  ╱  ○  ○  ○
+     │    ○  ╱  ○  ○        Classe 0
+     └──────────────────────────→ x₁
+
+    x₂
+     │                         LDA
+     │    Classe 1        
+     │  ●  ●  ●  ●      μ₁●  Centroïde
+     │   ●  ●  ●          │
+     │  ●  ●  ●  ●        │
+     │ ──────────────────────────
+     │        ○  ○  ○    │
+     │      ○  ○  ○  ○   │
+     │    ○  ○  ○  ○     │
+     │  ○  ○  ○      μ₀○  Centroïde
+     └──────────────────────────→ x₁
+     
+    Frontière = {x : wᵀx + b = 0}
+    w ∝ Σ⁻¹(μ₁ - μ₀)
+
+    x₂
+     │                        SVM
+     │    Classe 1        
+     │  ●  ●  ●  ●      ✱ Support vector
+     │   ●  ✱  ●          
+     │  ●  ●  ●  ●    ╱───╲  Marges
+     │ ────────────  ╱  │  ╲ ────────
+     │        ✱  ○ ╱   │   ╲○  ○
+     │      ○  ○  ╱    │    ╲  ○  ○
+     │    ○  ○  ╱     │     ╲  ○
+     │  ○  ○       ✱           ○
+     └──────────────────────────→ x₁
+     
+    Maximise la marge : 2/‖w‖
+```
+
+## 🎯 Comparaison Géométrique
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  LOGISTIC REGRESSION                                     │
+│  • Minimise la log-loss (cross-entropy)                 │
+│  • Frontière probabiliste douce                         │
+│  • Tous les points contribuent                          │
+│    Loss = -Σᵢ [yᵢlog(p) + (1-yᵢ)log(1-p)]              │
+└─────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────┐
+│  LDA (Linear Discriminant Analysis)                      │
+│  • Suppose distributions gaussiennes                     │
+│  • Maximise séparation inter-classes / intra-classe     │
+│  • Frontière = équiprobabilité bayésienne               │
+│    Frontière : P(Y=1|x) = P(Y=0|x)                      │
+└─────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────┐
+│  SVM (Support Vector Machine)                            │
+│  • Maximise la marge (distance minimale)                │
+│  • Seuls les support vectors comptent                    │
+│  • Robuste aux outliers                                  │
+│    Marge = 2/‖w‖,  min ‖w‖²  s.t.  yᵢ(wᵀxᵢ+b) ≥ 1      │
+└─────────────────────────────────────────────────────────┘
+```
+
+## 📈 Fonctions de Décision
+
+```
+    f(x) = wᵀx + b
+     │
+     │     LOGISTIC              LDA               SVM
+     │      
+  1  │      ╱────              ╱│╲              ╱│╲
+     │     ╱                  ╱ │ ╲            ╱ │ ╲
+  0.5│────●────              ──●──            ──●──
+     │   ╱   σ(f)             Bayes         Hard margin
+  0  │  ╱                       │                │
+     │                          │                │
+     └──────────────────────────────────────────→ x
+             │                  │                │
+         Seuil 0            μ₀ = μ₁         Marge max
+
+P(Y=1|x) = σ(f(x))      P(Y=k|x) ∝ πₖφₖ(x)    ŷ = sign(f(x))
+```
+
 ---
 
 ## 8.1 Régression Logistique

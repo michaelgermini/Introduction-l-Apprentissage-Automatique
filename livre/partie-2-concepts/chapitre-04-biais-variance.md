@@ -4,6 +4,106 @@
 
 Le compromis biais-variance est un concept fondamental en machine learning qui explique pourquoi les modèles peuvent sous-apprendre (underfitting) ou sur-apprendre (overfitting). Ce chapitre illustre ce dilemme à travers l'estimation de paramètres et l'estimation de densité.
 
+## 🗺️ Carte Mentale : Compromis Biais-Variance
+
+```
+                 COMPROMIS BIAIS-VARIANCE
+                          │
+        ┌─────────────────┼─────────────────┐
+        │                 │                 │
+    UNDERFITTING    OPTIMAL FIT      OVERFITTING
+        │                 │                 │
+   Biais élevé      Équilibré        Variance élevée
+   Variance faible   Biais/Var       Biais faible
+        │                 │                 │
+   Modèle trop      Généralise       Mémorise
+   simple           bien             données
+        │                                   │
+   ↓ Capacité                          ↑ Capacité
+```
+
+## 📐 Visualisation du Compromis
+
+### Décomposition de l'Erreur
+
+```
+    Erreur
+      │
+      │     Erreur totale = Biais² + Variance + Bruit
+      │
+      │         ╱╲
+  1.0 │        ╱  ╲
+      │       ╱    ╲              Variance
+      │      ╱      ╲────────────────
+      │     ╱        ╲╲          ╱
+      │    ╱          ╲╲        ╱
+  0.5 │   ╱            ╲╲      ╱
+      │  ╱   Biais²     ╲╲    ╱
+      │ ╱                ╲╲  ╱
+      │╱__________________╲╲╱_____ Bruit irréductible
+  0   └─────────────────────────────→ Complexité
+      Simple          Optimal     Complexe
+    (underfit)                   (overfit)
+```
+
+## 📊 Tableau Comparatif : Underfitting vs Overfitting
+
+| **Aspect** | **Underfitting** | **Sweet Spot** | **Overfitting** |
+|-----------|-----------------|---------------|----------------|
+| **Complexité** | Trop simple | Appropriée | Trop complexe |
+| **Biais** | ⬆️ Élevé | ✓ Faible | ✓ Très faible |
+| **Variance** | ✓ Faible | ✓ Faible | ⬆️ Élevée |
+| **Erreur Train** | Élevée | Faible | Très faible |
+| **Erreur Test** | Élevée | Faible | Élevée |
+| **Généralisation** | ✗ Mauvaise | ✓✓ Excellente | ✗ Mauvaise |
+| **Exemple** | Ligne droite | Polynôme deg 3 | Polynôme deg 15 |
+
+## 📈 Courbes d'Apprentissage Typiques
+
+```
+    Erreur
+      │
+      │  UNDERFITTING        OPTIMAL          OVERFITTING
+      │  
+      │  Train ─────         Train ───        Train ────╲
+      │  Test  ─────         Test  ───        Test  ────/╲
+      │                                                    ╲
+      │  ────────────        ─────────        ──────────   ───
+      │   Gap faible         Gap faible       Gap LARGE
+      │   Err. élevée        Err. faible      Train → 0
+      └────────────────────────────────────────────────→ Epochs
+
+Diagnostic :
+  • Gap faible + Err. élevée → Augmenter capacité
+  • Gap large               → Régulariser / Plus de données
+  • Convergence             → Sweet spot !
+```
+
+## 🎯 Diagramme de Décision : Que Faire ?
+
+```
+         Analyser erreur Train vs Test
+                    │
+        ┌───────────┼───────────┐
+        │                       │
+   Err Train       Err Train    Err Test
+   élevée?         faible?      élevée?
+        │                       │
+      OUI                     OUI
+        │                       │
+    UNDERFITTING            OVERFITTING
+        │                       │
+    ┌───┴───┐               ┌───┴───┐
+    │       │               │       │
+  • Modèle  • Features    • Régula- • Plus de
+    plus      meilleures    risation  données
+    complexe                │         │
+  • Plus    • Feature     • Dropout • Data aug-
+    layers    engineering   │         mentation
+                          • Early   • Simplifier
+                            stopping  modèle
+```
+
 ---
 
 ## 4.1 Estimation de Paramètres et Sieves

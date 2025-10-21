@@ -4,6 +4,22 @@
 
 Ce chapitre couvre l'apprentissage des paramètres et de la structure des modèles graphiques.
 
+## 🗺️ Carte Mentale : Apprentissage
+
+```
+        APPRENTISSAGE GRAPHIQUES
+                  │
+        ┌─────────┼─────────┐
+        │         │         │
+    PARAMÈTRES STRUCTURE  CAUSAL
+        │         │         │
+    ┌───┴───┐ ┌──┴──┐   Discovery
+    │       │ │     │       │
+   MLE    Bayes Score Search  PC
+    │       │    │     │    Algorithm
+ Fréquentiste Prior BIC Hill-Climb
+```
+
 ---
 
 ## 18.1 Apprentissage de Réseaux Bayésiens

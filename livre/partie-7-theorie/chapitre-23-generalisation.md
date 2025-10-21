@@ -4,6 +4,81 @@
 
 Ce chapitre présente les outils théoriques pour analyser la capacité de généralisation des algorithmes d'apprentissage.
 
+## 🗺️ Carte Mentale : Théorie de l'Apprentissage
+
+```
+              GÉNÉRALISATION
+                    │
+        ┌───────────┼───────────┐
+        │           │           │
+   COMPLEXITÉ   BORNES     SÉLECTION
+   (Capacité)   Probab.    Modèle
+        │           │           │
+    ┌───┴───┐   ┌───┴───┐   ┌───┴───┐
+    │       │   │       │   │       │
+   VC    Rademacher Hoeffding AIC   CV
+  Dim.   Complexity  Bounds   BIC   │
+    │       │          │      MDL  LOO
+ Shatter  Empirical  PAC           k-Fold
+           Process
+```
+
+## 📊 Tableau : Bornes de Généralisation
+
+| **Méthode** | **Borne** | **Dépendance** | **Utilité** |
+|------------|-----------|---------------|-------------|
+| **Hoeffding** | O(√(log(1/δ)/n)) | Borne fixe | Classe simple |
+| **VC-dimension** | O(√(d log n/n)) | d = VC-dim | Classique |
+| **Rademacher** | O(Rₙ(ℱ)) | Complexité empirique | Moderne, tight |
+| **PAC-Bayes** | O(√(KL(Q‖P)/n)) | Prior/Posterior | Bayésien |
+
+## 📐 Visualisation : VC-dimension
+
+```
+┌──────────────────────────────────────────────────────┐
+│           DIMENSION VC : EXEMPLES                     │
+└──────────────────────────────────────────────────────┘
+
+Demi-espaces en ℝ² : VC = 3
+
+3 points :               4 points :
+  ● ● ●                    ● ●
+                           ● ●
+Toutes les 2³=8           Impossible de séparer
+dichotomies réalisables   ●○  (XOR)
+                          ○●
+
+Conclusion : VC(lignes 2D) = 3
+
+Perceptron ℝᵈ : VC = d + 1
+
+Polynômes degré p : VC = O(p^d)
+
+Réseaux neurones : VC = O(W log W)
+  où W = nombre de poids
+```
+
+## 🎯 Borne de Généralisation : Visualisation
+
+```
+Erreur R(f)
+     │
+     │   ╱───── Borne supérieure
+  1.0│  ╱       R(f) ≤ R̂(f) + √(d log n / n)
+     │ ╱   ╱───
+     │╱   ╱      Risque réel R(f)
+  0.5│   ╱
+     │  ╱───────── Risque empirique R̂(f)
+     │
+   0 └───────────────────────────→ n (taille)
+       10   100   1000  10000
+
+Observations :
+  • Gap ↓ quand n ↑  (plus de données)
+  • Gap ↑ quand d ↑  (modèle complexe)
+  • Trade-off biais-variance
+```
+
 ---
 
 ## 23.1 Notation

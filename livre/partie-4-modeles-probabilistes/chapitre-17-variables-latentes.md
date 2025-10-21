@@ -4,6 +4,80 @@
 
 Ce chapitre traite des modèles avec variables non observées et des méthodes d'approximation variationnelle.
 
+## 🗺️ Carte Mentale : Variables Latentes
+
+```
+              VARIABLES LATENTES
+                      │
+        ┌─────────────┼─────────────┐
+        │             │             │
+   MODÈLES       INFÉRENCE      APPLICATIONS
+        │             │             │
+    ┌───┴───┐     ┌───┴───┐     ┌───┴───┐
+    │       │     │       │     │       │
+  GMM    HMM     EM    VI/VB   Topic  PCA
+ Mixture Hidden  │     Mean   Model Probab.
+    │   Markov  ELBO  Field    LDA    │
+ Clusters  │    Max  Approx.        Factor
+         States                      Analysis
+```
+
+## 📊 Tableau : Algorithme EM vs Inférence Variationnelle
+
+| **Critère** | **EM** | **Inférence Variationnelle** |
+|------------|--------|----------------------------|
+| **Objectif** | Maximiser P(X\|θ) | Maximiser ELBO |
+| **Distribution q** | Exacte P(Z\|X,θ) | Approximation q(Z) |
+| **E-step** | ✓ Calculer posteriors | ✓ Optimiser q(Z) |
+| **M-step** | ✓ Optimiser θ | ✓ Optimiser θ |
+| **Convergence** | ✓ Garantie (croissante) | ✓ Garantie (ELBO ↑) |
+| **Calcul** | Exact si simple | Approximatif |
+| **Usage** | GMM, HMM | Deep Learning (VAE) |
+
+## 🎯 Algorithme EM : Visualisation
+
+```
+┌──────────────────────────────────────────────────────────┐
+│           EXPECTATION-MAXIMIZATION (EM)                   │
+└──────────────────────────────────────────────────────────┘
+
+Exemple : Gaussian Mixture Model (GMM)
+
+Données :     ●●●    ○○○    ■■■
+              ●●      ○○     ■■
+              ●●●    ○○○    ■■■
+
+INITIALISATION :
+  θ⁽⁰⁾ = {μₖ, Σₖ, πₖ}  (3 Gaussiennes)
+
+ITÉRATION t :
+
+  E-STEP : Calculer responsabilités
+    γᵢₖ = P(Zᵢ = k | xᵢ, θ⁽ᵗ⁾)
+        = πₖ N(xᵢ|μₖ,Σₖ) / Σⱼ πⱼ N(xᵢ|μⱼ,Σⱼ)
+    
+    ● point xᵢ → γᵢ₁=0.8, γᵢ₂=0.1, γᵢ₃=0.1
+    (80% cluster 1)
+
+  M-STEP : Mettre à jour paramètres
+    μₖ⁽ᵗ⁺¹⁾ = Σᵢ γᵢₖ xᵢ / Σᵢ γᵢₖ
+    (moyenne pondérée)
+    
+    Σₖ⁽ᵗ⁺¹⁾ = Σᵢ γᵢₖ (xᵢ-μₖ)(xᵢ-μₖ)ᵀ / Σᵢ γᵢₖ
+    
+    πₖ⁽ᵗ⁺¹⁾ = Σᵢ γᵢₖ / n
+
+CONVERGENCE :
+  log P(X|θ) augmente à chaque itération
+  Arrêt : Δ log P(X|θ) < ε
+
+Résultat :    ●●●    ○○○    ■■■
+              ●●      ○○     ■■
+             ╱  ╲   ╱  ╲   ╱  ╲
+           N(μ₁) N(μ₂) N(μ₃)
+           Clusters identifiés !
+```
+
 ---
 
 ## 17.1 Introduction

@@ -4,6 +4,31 @@
 
 Ce chapitre présente différentes façons de mesurer la similarité ou la distance entre distributions de probabilité.
 
+## 🗺️ Carte Mentale : Divergences
+
+```
+        COMPARAISON DISTRIBUTIONS
+                  │
+        ┌─────────┼─────────┐
+        │         │         │
+   f-DIVERGENCES  Intégral  Optimal
+        │         Prob.    Transport
+    ┌───┴───┐      │         │
+    │       │      │         │
+   KL   JS    Total Var  Wasserstein
+    │   │         │         │
+ D(P‖Q) Symétrique ‖P-Q‖₁  Earth Mover
+```
+
+## 📊 Tableau Comparatif : Divergences
+
+| **Divergence** | **Formule** | **Symétrique** | **Propriétés** | **Usage** |
+|---------------|------------|---------------|--------------|-----------|
+| **KL** | Σ P log(P/Q) | ✗ Non | ≥0, pas métrique | VAE, EM |
+| **JS** | ½[KL(P‖M)+KL(Q‖M)] | ✓ Oui | Métrique | GAN |
+| **Total Variation** | ½Σ\|P-Q\| | ✓ Oui | Distance | Théorie |
+| **Wasserstein** | inf 𝔼[\|X-Y\|] | ✓ Oui | Métrique | WGAN |
+
 ---
 
 ## 12.1 Distance de Variation Totale

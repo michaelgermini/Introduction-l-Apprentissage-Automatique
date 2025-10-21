@@ -4,6 +4,23 @@
 
 Les réseaux bayésiens sont des modèles graphiques orientés acycliques représentant des dépendances causales.
 
+## 🗺️ Carte Mentale : Réseaux Bayésiens
+
+```
+        RÉSEAUX BAYÉSIENS
+                │
+        ┌───────┼───────┐
+        │       │       │
+    STRUCTURE INFÉRENCE APPRENT.
+    (DAG)       │         │
+        │   ┌───┴───┐ ┌──┴──┐
+        │   │       │ │     │
+  Causalité Variable Junction Params
+  d-séparation Elim.  Tree    │
+        │           │      Structure
+  Graphe moral              (Score)
+```
+
 ---
 
 ## 16.1 Définitions

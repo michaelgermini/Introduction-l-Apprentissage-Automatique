@@ -4,6 +4,21 @@
 
 Les champs aléatoires de Markov (MRF) modélisent les dépendances entre variables via des graphes non orientés.
 
+## 🗺️ Carte Mentale : MRF
+
+```
+          CHAMPS DE MARKOV (MRF)
+                    │
+        ┌───────────┼───────────┐
+        │           │           │
+   STRUCTURE    FACTORISATION  APPLICATIONS
+        │            │             │
+    Graphe       Potentials    ┌───┴───┐
+  Non orienté     φ(xₐ)        │       │
+        │         Cliques    Images    CRF
+  Markov Blanket  Maximal    Segm.    NLP
+```
+
 ---
 
 ## 14.1 Indépendance Conditionnelle

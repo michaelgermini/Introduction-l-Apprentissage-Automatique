@@ -4,6 +4,61 @@
 
 Les méthodes Monte-Carlo permettent d'échantillonner des distributions complexes et d'approximer des intégrales.
 
+## 🗺️ Carte Mentale : MCMC
+
+```
+                    MONTE-CARLO
+                          │
+        ┌─────────────────┼─────────────────┐
+        │                 │                 │
+    DIRECT           CHAÎNES DE          AVANCÉ
+  (Indépendant)      MARKOV (MCMC)          │
+        │                 │                 │
+    ┌───┴───┐         ┌───┴───┐         ┌───┴───┐
+    │       │         │       │         │       │
+ Inverse  Rejet   Metropolis Gibbs     HMC    NUTS
+Transform  │      Hastings  Sampling    │       │
+    │    Importance    │       │     Hamiltonian
+  Box-    Sampling  Accept  Conditionals  Gradient
+ Muller              Rate
+```
+
+## 📊 Tableau Comparatif : Méthodes d'Échantillonnage
+
+| **Méthode** | **Type** | **Dépendance** | **Convergence** | **Efficacité** | **Usage** |
+|------------|---------|---------------|----------------|--------------|-----------|
+| **Rejet** | Direct | Indépendant | Immédiate | ⚠️ Faible haute-dim | Simple, 1D-2D |
+| **Metropolis-Hastings** | MCMC | Chaîne | Asymptotique | ✓ Moyenne | Standard |
+| **Gibbs** | MCMC | Chaîne | Asymptotique | ✓✓ Bonne | Conditionnelles simples |
+| **HMC** | MCMC | Chaîne | Rapide | ✓✓✓ Excellente | Gradients disponibles |
+| **NUTS** | MCMC | Chaîne | Très rapide | ✓✓✓ Excellente | Stan, PyMC |
+
+## 📐 Visualisation : MCMC en Action
+
+```
+Distribution Cible p(x) :         Échantillonnage MCMC :
+
+     p(x)                          Trajectoire MCMC
+      │                               
+  1.0 │   ╱─╲                     ●──→●──→●
+      │  ╱   ╲                   ╱      ↓
+  0.5 │ ╱     ╲                 ●       ●
+      │╱       ╲___             ↓       ↓
+  0   └──────────────→ x        ●←──●←──●
+     -3  -1  1  3             
+                              Burn-in Phase (1000 iter)
+                              Sampling Phase (5000 iter)
+
+Histogramme des échantillons :   Autocorrélation :
+
+     ╱╲                           ACF
+    ╱  ╲                           1│●
+   ╱    ╲                           │  ●
+  ╱      ╲___                       │    ●  ●
+──────────────→                     │      ●   ●
+Converge vers p(x) !                0└────────────→ Lag
+```
+
 ---
 
 ## 13.1 Principes Généraux

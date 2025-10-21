@@ -4,6 +4,22 @@
 
 Ce chapitre couvre les algorithmes d'inférence pour les champs aléatoires de Markov.
 
+## 🗺️ Carte Mentale : Inférence MRF
+
+```
+            INFÉRENCE MRF
+                  │
+        ┌─────────┼─────────┐
+        │         │         │
+    EXACTE    APPROX.    ÉCHANTILLON
+        │         │         │
+  Sum-Product  Mean    ┌───┴───┐
+  (Belief      Field   │       │
+  Propagation)  │     Gibbs  Metropolis
+      │      Variational    Hastings
+  Messages      │
+```
+
 ---
 
 ## 15.1 Échantillonnage Monte-Carlo

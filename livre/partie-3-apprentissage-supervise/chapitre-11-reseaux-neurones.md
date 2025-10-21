@@ -4,6 +4,76 @@
 
 Les réseaux de neurones sont la base du deep learning moderne. Ce chapitre couvre les fondements architecturaux et algorithmiques.
 
+## 🗺️ Carte Mentale : Deep Learning
+
+```
+                    RÉSEAUX DE NEURONES
+                            │
+        ┌───────────────────┼───────────────────┐
+        │                   │                   │
+   ARCHITECTURES        TRAINING            RÉGULARISATION
+        │                   │                   │
+    ┌───┴───┐           ┌───┴───┐           ┌───┴───┐
+    │       │           │       │           │       │
+  MLP     CNN        Forward  Backward   Dropout  BatchNorm
+  RNN   Transformer     │       │           │
+        │           Loss    Backprop    Early Stop
+    Attention                             L1/L2
+```
+
+## 📐 Architecture Visuelle d'un MLP
+
+```
+INPUT        HIDDEN 1        HIDDEN 2        OUTPUT
+Layer         Layer          Layer           Layer
+
+  x₁ ●─────┐
+           ├──→● z₁⁽¹⁾         
+  x₂ ●──┬──┤      ↓          
+        │  └──→● σ(z₁⁽¹⁾)──┐
+  x₃ ●──┼──┐   a₁⁽¹⁾      ├──→● z₁⁽²⁾  
+        │  │                │      ↓
+  ...   │  └──→● z₂⁽¹⁾      │   σ(z₁⁽²⁾)──┐
+        │          ↓        │   a₁⁽²⁾      ├──→● ŷ
+  xₙ ●──┴──────→● σ(z₂⁽¹⁾)──┘              │
+                 a₂⁽¹⁾      └──→● z₂⁽²⁾    │
+                                 ↓         │
+                              σ(z₂⁽²⁾)─────┘
+                              a₂⁽²⁾
+
+Notations :
+  zᵢ⁽ˡ⁾ = Σⱼ wᵢⱼ⁽ˡ⁾ aⱼ⁽ˡ⁻¹⁾ + bᵢ⁽ˡ⁾  (pré-activation)
+  aᵢ⁽ˡ⁾ = σ(zᵢ⁽ˡ⁾)                 (activation)
+```
+
+## 📊 Tableau des Fonctions d'Activation
+
+| **Fonction** | **Formule** | **Dérivée** | **Range** | **Usage** | **Avantages** | **Inconvénients** |
+|-------------|------------|------------|----------|-----------|--------------|------------------|
+| **Sigmoid** | σ(z) = 1/(1+e⁻ᶻ) | σ(1-σ) | (0, 1) | Sortie binaire | Probabilité | Vanishing gradient |
+| **Tanh** | tanh(z) | 1-tanh² | (-1, 1) | Hidden layers | Centré en 0 | Vanishing gradient |
+| **ReLU** | max(0, z) | 1 si z>0 | [0, ∞) | Hidden (standard) | Rapide, simple | Dying ReLU |
+| **Leaky ReLU** | max(αz, z) | 1 ou α | (-∞, ∞) | Hidden (robuste) | Pas de mort | Hyperparamètre α |
+| **ELU** | z si z>0, α(eᶻ-1) si z≤0 | 1 ou α·eᶻ | (-α, ∞) | Hidden (smooth) | Smooth | Exponentielle |
+| **Softmax** | eᶻⁱ/Σⱼeᶻʲ | Complexe | (0, 1), Σ=1 | Sortie multi-classe | Probabilités | Uniquement sortie |
+
+## 📈 Visualisation des Activations
+
+```
+    σ(z)
+     │
+ 1   │      Sigmoid        ReLU          Tanh
+     │       ╱─────         ╱           ╱────
+     │      ╱              ╱           ╱
+ 0.5 │     ╱              ╱           ─
+     │    ╱              ╱           ╱
+ 0   │───────── z    ────╱────   ────╱──── z
+     │                             ╲
+-0.5 │                              ╲
+     │                               ╲────
+-1   │
+```
+
 ---
 
 ## 11.1 Définitions de Base

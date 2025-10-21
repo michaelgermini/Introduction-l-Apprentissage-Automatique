@@ -4,6 +4,78 @@
 
 La régression linéaire est l'un des algorithmes les plus fondamentaux en machine learning. Ce chapitre couvre les moindres carrés, la régularisation (Ridge, Lasso) et les SVM pour la régression.
 
+## 🗺️ Carte Mentale : Régression Linéaire
+
+```
+                    RÉGRESSION LINÉAIRE
+                            │
+        ┌───────────────────┼───────────────────┐
+        │                   │                   │
+    MOINDRES            RÉGULARISÉE          ROBUSTE
+     CARRÉS                 │                   │
+    (OLS)           ┌───────┴───────┐          SVM
+        │           │               │        Régression
+   Non biaisé    RIDGE           LASSO          │
+   Variance ++     │               │        ε-insensitive
+                L₂ penalty     L₁ penalty
+                Rétrécit       Sélectionne
+                              (Sparsité)
+```
+
+## 📊 Tableau Comparatif : OLS vs Ridge vs Lasso
+
+| **Méthode** | **Formulation** | **Solution** | **Propriétés** | **Usage** |
+|------------|----------------|-------------|---------------|-----------|
+| **OLS** | min ‖Y-Xβ‖² | β̂ = (XᵀX)⁻¹XᵀY | Non biaisé, variance élevée | p << n, faible collinéarité |
+| **Ridge** | min ‖Y-Xβ‖² + λ‖β‖² | β̂ = (XᵀX+λI)⁻¹XᵀY | Biaisé, variance réduite | p ≈ n, forte collinéarité |
+| **Lasso** | min ‖Y-Xβ‖² + λ‖β‖₁ | Pas de formule fermée | Sélection de variables | p >> n, features redondantes |
+| **Elastic Net** | min ‖Y-Xβ‖² + λ₁‖β‖₁ + λ₂‖β‖² | Itératif | Combine Ridge + Lasso | p >> n, groupes de features |
+
+## 📐 Visualisation Géométrique
+
+### Contraintes de Régularisation
+
+```
+Espace des paramètres (β₁, β₂) :
+
+    β₂                          RIDGE (L₂)
+     │                             ╭───╮
+     │    ╭───────╮              ╱       ╲
+     │  ╱           ╲           │    ●β* │  Région convexe
+     │ │   Ellipses  │          │ solution│  Cercle
+     │  ╲  de RSS   ╱            ╲       ╱
+     ─●───────●────────→ β₁       ╰───╯
+      │  β̂ (OLS)
+      │
+    
+    β₂                          LASSO (L₁)
+     │                             ╱╲
+     │    ╭───────╮              ╱  ╲
+     │  ╱           ╲           ◆    │     Région en losange
+     │ │   Ellipses  │          │  ●β*│   Coins → sparsité
+     │  ╲  de RSS   ╱            ╲  ╱ 
+     ─●───────────────────→ β₁    ╲╱
+      │
+      │  Solution souvent sur un coin → β₁ ou β₂ = 0
+```
+
+### 🎯 Effet de λ sur les Coefficients
+
+```
+    Coefficient β
+         │
+    β̂OLS ●─────────────────────  OLS (λ=0)
+         │╲
+         │ ╲                      Ridge : Rétrécissement progressif
+         │  ╲─────────           (jamais exactement 0)
+         │   ╲      ╲
+         │    ╲──────╲───        Lasso : Atteint 0
+    0    │─────●──────●────→ λ   (sélection de variables)
+         │    λ₁     λ₂
+         │     
+    Optimal via CV
+```
+
 ---
 
 ## 7.1 Régression par Moindres Carrés

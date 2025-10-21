@@ -4,6 +4,56 @@
 
 L'optimisation est au cœur du machine learning. Entraîner un modèle revient à résoudre un problème d'optimisation : trouver les paramètres qui minimisent une fonction de coût. Ce chapitre couvre les algorithmes d'optimisation essentiels utilisés en ML.
 
+## 🗺️ Carte Mentale : Méthodes d'Optimisation
+
+```
+                        OPTIMISATION EN ML
+                               │
+            ┌──────────────────┼──────────────────┐
+            │                  │                  │
+      SANS CONTRAINTE    AVEC CONTRAINTES    STOCHASTIQUE
+            │                  │                  │
+    ┌───────┴───────┐      ┌───┴───┐          ┌───┴───┐
+    │               │      │       │          │       │
+ Gradient    Newton &  Lagrange KKT         SGD    ADAM
+  Descent    Quasi-N.    │                   │
+    │           │     Pénalité           Mini-batch
+ Line Search  BFGS   Augmentée
+```
+
+## 📊 Tableau Comparatif des Algorithmes
+
+| **Algorithme** | **Complexité/iter** | **Convergence** | **Usage ML** | **Avantages** | **Inconvénients** |
+|----------------|-------------------|----------------|-------------|--------------|------------------|
+| **Gradient Descent** | O(n) | Linéaire | Universel | Simple | Lent |
+| **Newton** | O(n³) | Quadratique | Petit n | Rapide | Coût élevé |
+| **SGD** | O(1) | Sous-linéaire | Big Data | Scalable | Bruyant |
+| **ADAM** | O(1) | Adaptatif | Deep Learning | Robuste | Hyperparamètres |
+| **L-BFGS** | O(n×m) | Superlinéaire | ML classique | Efficace | Mémoire |
+
+## 🎯 Diagramme de Flux : Choix d'Algorithme
+
+```
+         Début : Problème d'optimisation
+                      │
+                      ▼
+         ┌─────────────────────────┐
+         │ Dataset de taille N ?   │
+         └─────────────────────────┘
+              │              │
+           N < 10⁴        N > 10⁶
+              │              │
+              ▼              ▼
+         ┌─────────┐    ┌─────────┐
+         │ Newton  │    │   SGD   │
+         │ L-BFGS  │    │  ADAM   │
+         └─────────┘    └─────────┘
+              │              │
+              ▼              ▼
+       Convergence       Mini-batch
+         rapide           adaptatif
+```
+
 ---
 
 ## 3.1 Terminologie de Base
@@ -134,7 +184,111 @@ x_{k+1} = x_k - α_k ∇f(x_k)
 
 où α_k > 0 est le pas d'apprentissage (learning rate).
 
-**Implémentation Python** :
+#### 📐 Intuition Géométrique
+
+```
+Paysage de la fonction f(x) :
+
+    f(x)
+     ↑
+     │     ╱╲              Descente de gradient :
+     │    ╱  ╲             On suit la pente négative
+     │   ╱    ╲    
+     │  ╱  x₀  ╲          x₀ ──────→ x₁ ──────→ x₂ ──→ x*
+     │ ╱   ↓    ╲         (gradient négatif à chaque étape)
+     │╱    x₁    ╲        
+     └─────────────→ x
+          ↓
+         x₂→x*
+```
+
+#### 📝 Exemple Complet Pas à Pas
+
+**Problème** : Minimiser f(x, y) = x² + 4y²
+
+```
+DONNÉES INITIALES :
+    f(x, y) = x² + 4y²
+    Point initial : (x₀, y₀) = (4, 2)
+    Pas d'apprentissage : α = 0.1
+
+ÉTAPE 0 : Calcul du gradient
+    ∇f(x, y) = [∂f/∂x, ∂f/∂y]ᵀ = [2x, 8y]ᵀ
+
+    Au point (4, 2) :
+        ∇f(4, 2) = [2×4, 8×2]ᵀ = [8, 16]ᵀ
+        f(4, 2) = 16 + 16 = 32
+
+ITÉRATION 1 :
+    x₁ = x₀ - α·∇f_x(x₀)
+       = 4 - 0.1 × 8
+       = 4 - 0.8 = 3.2
+    
+    y₁ = y₀ - α·∇f_y(y₀)
+       = 2 - 0.1 × 16
+       = 2 - 1.6 = 0.4
+    
+    Point : (x₁, y₁) = (3.2, 0.4)
+    f(3.2, 0.4) = 10.24 + 0.64 = 10.88
+    Réduction : 32 → 10.88 ✓
+
+ITÉRATION 2 :
+    ∇f(3.2, 0.4) = [6.4, 3.2]ᵀ
+    
+    x₂ = 3.2 - 0.1 × 6.4 = 2.56
+    y₂ = 0.4 - 0.1 × 3.2 = 0.08
+    
+    f(2.56, 0.08) = 6.554 + 0.026 = 6.58
+    Réduction : 10.88 → 6.58 ✓
+
+ITÉRATION 3 :
+    ∇f(2.56, 0.08) = [5.12, 0.64]ᵀ
+    
+    x₃ = 2.56 - 0.1 × 5.12 = 2.048
+    y₃ = 0.08 - 0.1 × 0.64 = 0.016
+    
+    f(2.048, 0.016) ≈ 4.19
+    Réduction : 6.58 → 4.19 ✓
+
+CONVERGENCE :
+    Après plusieurs itérations → (x*, y*) = (0, 0)
+    Minimum : f(0, 0) = 0
+
+Schéma de convergence :
+    
+    y
+    │  ●(4,2)          Courbes de niveau de f
+    │   ╲              (ellipses)
+    │    ●(3.2,0.4)
+  1 │      ╲           Trajectoire de descente
+    │       ●(2.56,0.08)
+    │         ╲
+  0 │          ●─────●(0,0) ★
+    └───────────────────────→ x
+    0         2          4
+```
+
+#### ⚙️ Choix du Pas d'Apprentissage α
+
+| **α** | **Effet** | **Convergence** | **Recommandation** |
+|-------|----------|----------------|-------------------|
+| Trop grand (α > 2/L) | Divergence | ✗ Aucune | Éviter |
+| Grand (α ≈ 1/L) | Oscillations | ⚠️ Lente | Attention |
+| Optimal (α = μ/L²) | Stable | ✓ Rapide | Idéal |
+| Petit (α << 1/L) | Très lent | ✓ Garantie | Sûr mais lent |
+
+**Illustration** :
+
+```
+α trop grand :                α optimal :              α trop petit :
+    ╱╲                           ╱╲                        ╱╲
+   ╱  ╲                         ╱  ╲                      ╱  ╲
+  ●────●                       ●─→●─→●                   ●─→─→─→─→●
+ ●      ●                        ↓  ↓                     (très lent)
+●        ● Diverge !             ★ Converge
+```
+
+**Implémentation Python Complète** :
 ```python
 def gradient_descent(f, grad_f, x0, alpha=0.01, max_iter=1000, tol=1e-6):
     """
@@ -227,6 +381,153 @@ f(θ) = 𝔼[ℓ(θ; Z)] = (1/n) Σᵢ ℓ(θ; zᵢ)
 ```
 ∇f(θ) ≈ ∇ℓ(θ; z_i)  où i est choisi aléatoirement
 ```
+
+## 📊 Comparaison Visuelle : GD vs SGD vs ADAM
+
+### Trajectoires de Convergence
+
+```
+Paysage d'optimisation (vue de dessus) :
+
+         Gradient Descent (GD)          
+              ╭───────╮                 
+             ╱         ╲                
+        x₀ ●────→●────→● x*            Lisse, déterministe
+           ╲         ╱                 Convergence monotone
+            ╰───────╯                  
+
+         Stochastic GD (SGD)           
+              ╭───────╮                 
+             ╱    ●↗   ╲               Bruyant, stochastique
+        x₀ ●→●↘→●↗→●→● x*             Oscille autour de x*
+           ╲    ●↘   ╱                Convergence en moyenne
+            ╰───────╯                  
+
+              ADAM                     
+              ╭───────╮                 
+             ╱         ╲               Adaptatif
+        x₀ ●──→●──→●──→● x*           Convergence rapide
+           ╲         ╱                 Peu d'oscillations
+            ╰───────╯                  
+```
+
+### 📈 Courbes de Convergence
+
+```
+    Loss
+     │
+ 10⁴ │●                        
+     │ ╲             ──── GD
+     │  ╲───────     ──── SGD (bruyant)
+ 10² │   ╲  ╲ /╲    ──── ADAM
+     │    ╲  ╲/  ╲  
+ 10⁰ │     ────────●
+     │          SGD
+ 10⁻² │           ─────ADAM
+     │               ────GD
+     └─────────────────────→ Iterations
+       0   50  100  150  200
+```
+
+### 📋 Tableau Comparatif Détaillé
+
+| **Critère** | **GD** | **SGD** | **Mini-Batch SGD** | **Momentum** | **ADAM** |
+|-------------|--------|---------|-------------------|-------------|----------|
+| **Gradient par iter** | Full (N samples) | 1 sample | B samples | B samples | B samples |
+| **Complexité/iter** | O(N) | O(1) | O(B) | O(B) | O(B) |
+| **Convergence** | Monotone | Bruitée | Stable | Rapide | Très rapide |
+| **Mémoire** | O(d) | O(d) | O(d) | O(2d) | O(3d) |
+| **Hyperparamètres** | α | α, schedule | α, B | α, β | α, β₁, β₂ |
+| **Scalabilité** | ✗ Mauvaise | ✓✓ Excellente | ✓✓ Excellente | ✓✓ Excellente | ✓✓ Excellente |
+| **Robustesse** | ⚠️ Moyenne | ⚠️ Sensible | ✓ Bonne | ✓ Bonne | ✓✓ Très bonne |
+| **Usage ML** | Petit N | Big Data | Universel | Computer Vision | Deep Learning |
+
+### ⚙️ Formules Côte à Côte
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  GRADIENT DESCENT (GD)                                           │
+│  θₖ₊₁ = θₖ - α ∇f(θₖ)                                           │
+│  ↪ Utilise toutes les données                                   │
+└─────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────┐
+│  STOCHASTIC GD (SGD)                                             │
+│  θₖ₊₁ = θₖ - α ∇ℓ(θₖ; zᵢ)                                       │
+│  ↪ Utilise 1 échantillon aléatoire                              │
+└─────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────┐
+│  MINI-BATCH SGD                                                  │
+│  θₖ₊₁ = θₖ - α (1/B) Σᵢ∈Batch ∇ℓ(θₖ; zᵢ)                       │
+│  ↪ Compromis entre GD et SGD                                    │
+└─────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────┐
+│  MOMENTUM                                                        │
+│  vₖ = β vₖ₋₁ + gₖ                                               │
+│  θₖ₊₁ = θₖ - α vₖ                                               │
+│  ↪ Accumule la vitesse (inertie)                                │
+└─────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────┐
+│  ADAM (Adaptive Moment Estimation)                               │
+│  mₖ = β₁ mₖ₋₁ + (1-β₁) gₖ        (1er moment : moyenne)         │
+│  vₖ = β₂ vₖ₋₁ + (1-β₂) gₖ²       (2ème moment : variance)       │
+│  θₖ₊₁ = θₖ - α m̂ₖ / (√v̂ₖ + ε)                                  │
+│  ↪ Adapte le pas pour chaque paramètre                          │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### 🎯 Guide de Choix
+
+```
+                Quel algorithme choisir ?
+                         │
+        ┌────────────────┼────────────────┐
+        │                                  │
+    N < 10,000                        N > 1,000,000
+    Dataset petit                     Big Data
+        │                                  │
+    ┌───┴───┐                          ┌───┴───┐
+    │       │                          │       │
+  Convexe Non-convexe              Batch Size ?
+    │       │                          │
+   GD    L-BFGS                  ┌─────┴─────┐
+         Newton                  │           │
+                              B=1          B>1
+                               │            │
+                             SGD      Mini-batch SGD
+                                           │
+                                      Deep Learning ?
+                                           │
+                                      ┌────┴────┐
+                                      │         │
+                                    Oui       Non
+                                      │         │
+                                   ADAM    Momentum
+                                            SGD
+```
+
+### 💡 Conseils Pratiques
+
+**Taille de Batch Recommandée** :
+
+| **Cas** | **Batch Size** | **Raison** |
+|---------|---------------|-----------|
+| Petits modèles | 32-64 | Équilibre vitesse/stabilité |
+| CNN (images) | 64-256 | Parallélisation GPU |
+| Transformers (NLP) | 16-32 | Contrainte mémoire |
+| Très grands modèles | 8-16 | Limite GPU |
+
+**Learning Rate** :
+
+| **Algorithme** | **α initial** | **Schedule** |
+|---------------|--------------|-------------|
+| GD | 0.01-0.1 | Constant ou decay |
+| SGD | 0.01-0.1 | 1/√t ou cosine |
+| Momentum | 0.01 | Step decay |
+| ADAM | 0.001 | Constant ou warmup |
 
 ### 3.3.2 Algorithme SGD
 

@@ -4,6 +4,151 @@
 
 Les noyaux sont un outil puissant qui permet d'étendre les méthodes linéaires à des espaces de dimension infinie. Ce chapitre introduit la théorie des noyaux reproduisants.
 
+## 🗺️ Carte Mentale : Le Kernel Trick
+
+```
+                    NOYAUX (KERNELS)
+                           │
+        ┌──────────────────┼──────────────────┐
+        │                  │                  │
+    THÉORIE           NOYAUX             APPLICATIONS
+        │              POPULAIRES             │
+    ┌───┴───┐            │              ┌─────┴─────┐
+    │       │            │              │           │
+ Espace  Produit     ┌───┴───┐       SVM      Kernel
+ Hilbert Scalaire    │       │        │       Ridge/PCA
+    │       │     Linéaire  RBF    Polynomial  │
+  φ(x)   K(x,x')      │       │        │    K-Means
+         =⟨φ(x),φ(x')⟩ xᵀx'  Gaussien Degré d  Spectral
+```
+
+## 🎯 Le Kernel Trick : Concept Clé
+
+```
+┌──────────────────────────────────────────────────────────┐
+│              LE KERNEL TRICK EN ACTION                    │
+└──────────────────────────────────────────────────────────┘
+
+APPROCHE NAÏVE (Coûteuse) :
+  1. Transformer : x → φ(x)     [Dimension peut être ∞!]
+  2. Calculer : ⟨φ(x), φ(x')⟩   [Très coûteux]
+
+KERNEL TRICK (Efficace) :
+  Directement : K(x, x') = ⟨φ(x), φ(x')⟩
+  
+Schéma :
+
+    Espace Original            Espace Transformé
+         (ℝᵈ)                      (ℋ, dim >> d)
+    
+    x₁ ●  ● x₂                    φ(x₁) ●
+      ●  ●        ─────φ──→              ╲
+    x₃●  ●x₄                             ●─● Séparable
+         ●                              ╱     linéairement!
+    Non-linéairement              φ(x₄) ●
+    séparable                     
+                                  φ(x₃) ●
+
+Exemple : XOR problem
+  Original : (x₁,x₂) non-séparable linéairement
+  Après φ  : Séparable avec un hyperplan !
+```
+
+## 📊 Tableau Comparatif : Noyaux Populaires
+
+| **Noyau** | **Formule** | **Dimension ℋ** | **Paramètres** | **Avantages** | **Inconvénients** |
+|-----------|-----------|----------------|---------------|--------------|------------------|
+| **Linéaire** | xᵀx' | d | Aucun | Rapide, simple | Linéaire seulement |
+| **Polynomial** | (xᵀx' + c)^p | C(d+p,p) | p (degré), c | Flexible | Numérique instable |
+| **RBF (Gaussien)** | exp(-γ‖x-x'‖²) | ∞ | γ (ou σ) | Universel, smooth | Peut overfit |
+| **Sigmoid** | tanh(α xᵀx' + c) | ∞ | α, c | Comme réseau | Pas toujours PD |
+| **Laplacien** | exp(-γ‖x-x'‖₁) | ∞ | γ | Moins smooth | Rare |
+
+## 📐 Visualisation : Effet des Noyaux
+
+### Noyau RBF avec différents γ
+
+```
+γ = 0.1 (large σ)         γ = 1.0 (moyen)         γ = 10 (petit σ)
+
+    ╭───────╮                  ╭──╮                     ╭╮
+   ╱         ╲                ╱    ╲                   ╱╲
+  ╱           ╲              ╱      ╲                 ╱  ╲
+ ╱             ╲            ╱        ╲               ╱    ╲
+───────●───────────        ────●────────            ──●──────
+  Influence large       Influence moyenne       Influence locale
+  Smooth, underfit      Équilibré               Peut overfit
+```
+
+### Transformation par Noyau Polynomial
+
+```
+Espace Original (2D)          Noyau Poly(deg=2)
+
+    x₂                         z₁ = x₁²
+     │                              ╱
+   1 │ ○ ○ ●                      ╱  ● ●
+     │ ○ ● ● ●                   ╱   ●
+   0 │ ● ● ●         ───φ──→   z₂= √2x₁x₂
+     │   ●                      │    ●
+  -1 │                          │   ● ○ ○
+     └────────→ x₁               └────────→ z₃ = x₂²
+    -1  0  1                         Séparable !
+
+Non-linéairement              Linéairement séparable
+séparable                     dans l'espace transformé
+```
+
+## 🔢 Calcul Explicite : Noyau Polynomial
+
+### Exemple Détaillé
+
+```
+Soit x = [x₁, x₂]ᵀ ∈ ℝ²
+Noyau polynomial : K(x, x') = (xᵀx')²
+
+ÉTAPE 1 : Calcul direct du noyau
+  K(x, x') = (x₁x₁' + x₂x₂')²
+
+ÉTAPE 2 : Expansion
+  K(x, x') = x₁²x₁'² + 2x₁x₂x₁'x₂' + x₂²x₂'²
+
+ÉTAPE 3 : Identification de φ
+  φ(x) = [x₁², √2x₁x₂, x₂²]ᵀ ∈ ℝ³
+  
+  Vérification :
+  φ(x)ᵀφ(x') = x₁²x₁'² + √2x₁x₂·√2x₁'x₂' + x₂²x₂'²
+              = x₁²x₁'² + 2x₁x₂x₁'x₂' + x₂²x₂'²
+              = K(x, x') ✓
+
+GAIN : Au lieu de calculer φ(x) puis ⟨φ(x),φ(x')⟩
+       On calcule directement (xᵀx')² !
+```
+
+## 🎨 Matrice de Gram
+
+```
+Pour n points : X = [x₁, x₂, ..., xₙ]
+
+Matrice de Gram K :
+    
+    K = ┌                                      ┐
+        │ K(x₁,x₁)  K(x₁,x₂)  ...  K(x₁,xₙ)  │
+        │ K(x₂,x₁)  K(x₂,x₂)  ...  K(x₂,xₙ)  │
+        │    ⋮         ⋮       ⋱       ⋮      │
+        │ K(xₙ,x₁)  K(xₙ,x₂)  ...  K(xₙ,xₙ)  │
+        └                                      ┘
+
+Propriétés :
+  • Symétrique : K = Kᵀ
+  • Semi-définie positive : K ⪰ 0
+  • Kᵢⱼ = ⟨φ(xᵢ), φ(xⱼ)⟩
+
+Python :
+  from sklearn.metrics.pairwise import rbf_kernel
+  K = rbf_kernel(X, gamma=0.5)
+```
+
 ---
 
 ## 6.1 Introduction

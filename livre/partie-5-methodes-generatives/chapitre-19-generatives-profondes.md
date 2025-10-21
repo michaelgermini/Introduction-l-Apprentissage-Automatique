@@ -4,6 +4,76 @@
 
 Ce chapitre présente les techniques modernes de modélisation générative basées sur les réseaux de neurones profonds.
 
+## 🗺️ Carte Mentale : Modèles Génératifs
+
+```
+                    GÉNÉRATION DE DONNÉES
+                            │
+        ┌───────────────────┼───────────────────┐
+        │                   │                   │
+    EXPLICITE          IMPLICITE           HYBRIDE
+   (Densité p(x))    (Échantillonnage)        │
+        │                   │                   │
+    ┌───┴───┐           ┌───┴───┐         Diffusion
+    │       │           │       │          Models
+  VAE   Flows        GAN    Score           │
+    │       │           │    Matching    Stable
+ ELBO  Invertible  Adversarial  │       Diffusion
+  KL   Bijection   Min-Max    Langevin   DALL-E 2
+```
+
+## 📊 Tableau Comparatif : Méthodes Génératives
+
+| **Méthode** | **Type** | **Densité p(x)** | **Qualité** | **Diversité** | **Stabilité** | **Complexité** |
+|------------|---------|-----------------|------------|--------------|--------------|---------------|
+| **VAE** | Explicite | ✓ Oui (approx.) | ⚠️ Moyenne | ✓✓ Bonne | ✓✓ Stable | ⭐⭐ Moyenne |
+| **GAN** | Implicite | ✗ Non | ✓✓✓ Excellente | ⚠️ Mode collapse | ⚠️ Instable | ⭐⭐⭐ Élevée |
+| **Normalizing Flows** | Explicite | ✓ Oui (exacte) | ✓ Bonne | ✓✓ Bonne | ✓✓ Stable | ⭐⭐⭐ Élevée |
+| **Diffusion** | Hybride | ✓ Oui (implicite) | ✓✓✓ Excellente | ✓✓✓ Excellente | ✓✓ Stable | ⭐⭐⭐⭐ Très élevée |
+
+## 🎨 Comparaison Visuelle : VAE vs GAN
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    VAE (Variational Autoencoder)             │
+└─────────────────────────────────────────────────────────────┘
+
+    Image x          Encodeur         z (latent)      Décodeur        x̂ (reconstruit)
+    ┌─────┐           ↓                 ↓               ↓              ┌─────┐
+    │ 🐱  │  ─────→  μ(x), σ(x)  →  Sampling  →  Génération  ─────→  │ 🐱  │
+    └─────┘                          z~N(μ,σ²)                        └─────┘
+
+  Objectif : Maximiser ELBO = 𝔼[log p(x|z)] - KL(q(z|x)||p(z))
+             ↓                     ↓
+       Reconstruction      Régularisation
+       (qualité)          (distribution smooth)
+
+Avantages : ✓ Stable, ✓ Densité explicite, ✓ Interpolation
+Inconvénients : Images un peu floues
+
+
+┌─────────────────────────────────────────────────────────────┐
+│                    GAN (Generative Adversarial Network)      │
+└─────────────────────────────────────────────────────────────┘
+
+    Bruit z          Générateur        Image fake       Discriminateur
+    ┌─────┐             G                ┌─────┐             D
+    │ ∼∼∼ │  ─────→  Réseau   ─────→   │ 🐱? │  ─────→   Real/Fake?
+    └─────┘          Neuronal           └─────┘           [0...1]
+                                            ↑
+                        Image réelle        │
+                        ┌─────┐             │
+                        │ 🐱  │  ───────────┘
+                        └─────┘
+
+  Objectif : min_G max_D  𝔼[log D(x)] + 𝔼[log(1-D(G(z)))]
+             ↑           ↑
+         Tromper D   Distinguer
+
+Avantages : ✓✓✓ Images nettes, ✓ Haute qualité
+Inconvénients : ✗ Instable, ✗ Mode collapse
+```
+
 ---
 
 ## 19.1 Flots Normalisants (Normalizing Flows)

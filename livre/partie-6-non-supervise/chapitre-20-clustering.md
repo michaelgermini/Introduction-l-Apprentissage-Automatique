@@ -4,6 +4,86 @@
 
 Le clustering consiste à grouper des données similaires sans labels supervisés.
 
+## 🗺️ Carte Mentale : Méthodes de Clustering
+
+```
+                        CLUSTERING
+                            │
+        ┌───────────────────┼───────────────────┐
+        │                   │                   │
+    PARTITIONNEMENT    HIÉRARCHIQUE         DENSITÉ
+        │                   │                   │
+    ┌───┴───┐           ┌───┴───┐           ┌───┴───┐
+    │       │           │       │           │       │
+ K-means K-medoids  Single  Ward       DBSCAN  HDBSCAN
+    │       │      linkage Average        │       │
+  Lloyd   PAM      Complete   │        ε-voisinage
+  K++              │       Dendro       min_samples
+                Agglom.
+```
+
+## 📊 Tableau Comparatif : Algorithmes de Clustering
+
+| **Méthode** | **Forme Clusters** | **K requis** | **Scalabilité** | **Outliers** | **Complexité** | **Usage** |
+|------------|-------------------|-------------|----------------|-------------|---------------|-----------|
+| **K-means** | Sphériques | ✓ Oui | ✓✓✓ Excellente | ✗ Sensible | O(nKi) | Standard, Big Data |
+| **Hiérarchique** | Arbitraire | ✗ Non | ⚠️ Faible | ✓ Robuste | O(n³) | Petits datasets |
+| **Spectral** | Non-convexe | ✓ Oui | ⚠️ Moyenne | ✓ Robuste | O(n³) | Formes complexes |
+| **DBSCAN** | Arbitraire | ✗ Non | ✓✓ Bonne | ✓✓ Très robuste | O(n log n) | Densité variable |
+| **GMM** | Elliptiques | ✓ Oui | ✓✓ Bonne | ⚠️ Sensible | O(nK²i) | Probabiliste |
+
+## 📐 Visualisation : Comparaison des Méthodes
+
+```
+Dataset Exemple :          K-means :           Spectral :         DBSCAN :
+
+   ●●●  ○○○                ●●●  ○○○            ●●●  ○○○          ●●●  ○○○
+  ●●●   ○○                ●●●   ○○            ●●●   ○○          ●●●   ○○
+   ●     ○                 ●     ○              ●     ○            ●     ○
+    ●   ○                   ●   ○               ●   ○             ●   ○
+  ●●●● ○○○○              ●●●● ○○○○           ●●●● ○○○○         ●●●● ○○○○
+  ●●●● ○○○○              ●●●● ○○○○           ●●●● ○○○○         ●●●● ○○○○
+
+Résultat :              ✓ Sphériques        ✓ Non-convexes     ✓ Forme + Densité
+                        ✗ Forme fixe        ✓ Flexible         ✓ Outliers détectés
+```
+
+## 🎯 K-means : Algorithme Détaillé
+
+```
+┌──────────────────────────────────────────────────────┐
+│                  ALGORITHME K-MEANS                   │
+└──────────────────────────────────────────────────────┘
+
+INITIALISATION (K-means++) :
+  1. Choisir 1er centre μ₁ au hasard
+  2. Pour k = 2 to K :
+     Choisir μₖ avec P(x) ∝ D(x)² 
+     (où D(x) = distance au centre le plus proche)
+
+ITÉRATION :
+  Étape 1 : ASSIGNMENT
+    Pour chaque point xᵢ :
+      cᵢ = argmin_k ‖xᵢ - μₖ‖²
+      
+    Visualisation :
+         μ₁●              μ₂●
+        ╱  │  ╲          ╱  │  ╲
+       ●   ●   ●        ●   ●   ●
+      Cluster 1        Cluster 2
+
+  Étape 2 : UPDATE
+    Pour chaque cluster k :
+      μₖ = (1/|Cₖ|) Σ_{i:cᵢ=k} xᵢ
+      
+    Nouveaux centres = barycentres
+
+CONVERGENCE :
+  • Objectif minimisé : Σᵢ ‖xᵢ - μ_{cᵢ}‖²
+  • Garantie : Objectif décroît à chaque itération
+  • Arrêt : Centres ne bougent plus (ou max iter)
+```
+
 ---
 
 ## 20.1 Introduction

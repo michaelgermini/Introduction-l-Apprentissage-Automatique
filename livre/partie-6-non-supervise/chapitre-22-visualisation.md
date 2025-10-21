@@ -4,6 +4,87 @@
 
 Les techniques de visualisation permettent de représenter des données haute dimension en 2D ou 3D.
 
+## 🗺️ Carte Mentale : Visualisation
+
+```
+              VISUALISATION & MANIFOLDS
+                        │
+        ┌───────────────┼───────────────┐
+        │               │               │
+    LINÉAIRE       MANIFOLD         MODERNE
+        │               │               │
+    ┌───┴───┐       ┌───┴───┐       ┌───┴───┐
+    │       │       │       │       │       │
+  PCA    MDS    Isomap  LLE     t-SNE  UMAP
+    │       │       │       │       │       │
+Variance Distance Géodésique Local  KL-div Topologique
+Global  Global    Graph    Weights  Probas  Fuzzy Graph
+```
+
+## 📊 Tableau Comparatif : t-SNE vs UMAP vs PCA
+
+| **Critère** | **PCA** | **t-SNE** | **UMAP** |
+|------------|---------|-----------|----------|
+| **Linéaire** | ✓ Oui | ✗ Non | ✗ Non |
+| **Scalabilité** | ✓✓✓ O(np²) | ⚠️ O(n²) | ✓✓ O(n^1.14) |
+| **Vitesse** | Très rapide | Lent | Rapide |
+| **Structure globale** | ✓✓ Bonne | ✗ Perdue | ✓ Préservée |
+| **Structure locale** | ⚠️ Moyenne | ✓✓✓ Excellente | ✓✓✓ Excellente |
+| **Déterministe** | ✓ Oui | ✗ Non | ⚠️ Quasi |
+| **Interprétabilité** | ✓✓ Axes = composantes | ✗ Axes arbitraires | ⚠️ Difficile |
+| **Usage** | Prétraitement | Visualisation finale | Moderne, polyvalent |
+
+## 📐 Comparaison Visuelle : PCA vs t-SNE vs UMAP
+
+```
+Données Originales (haute dim) :
+  Clusters + Topologie complexe
+
+     PCA (2D) :              t-SNE (2D) :            UMAP (2D) :
+
+    ●●●    ○○○              ●●●      ○○○          ●●●      ○○○
+     ●      ○                 ●        ○             ●        ○
+      ●    ○                  ●        ○             ●        ○
+       ●●○○                    ●●    ○○               ●●    ○○
+       ■■■■                       ■■■■                 ■■■■
+        
+✓ Rapide                    ✓ Clusters nets        ✓ Structure préservée
+✗ Overlap clusters          ✗ Distances globales   ✓ Rapide
+✓ Interprétable             ✗ Non déterministe     ✓ Équilibré
+
+Observations :
+  • PCA : Projete linéairement, peut mélanger clusters
+  • t-SNE : Sépare bien les clusters mais perd structure globale
+  • UMAP : Meilleur compromis local/global
+```
+
+## 🔍 t-SNE : Intuition
+
+```
+┌──────────────────────────────────────────────────────┐
+│                 ALGORITHME t-SNE                      │
+└──────────────────────────────────────────────────────┘
+
+ÉTAPE 1 : Probabilités dans l'espace haute dimension
+  Pour chaque paire (i,j), calculer similarité :
+    p_{j|i} ∝ exp(-‖xᵢ - xⱼ‖²/2σᵢ²)
+    
+  Symétrisé : p_{ij} = (p_{j|i} + p_{i|j})/(2n)
+
+ÉTAPE 2 : Probabilités dans l'espace 2D
+  q_{ij} ∝ (1 + ‖yᵢ - yⱼ‖²)⁻¹  (distribution t)
+
+ÉTAPE 3 : Minimiser KL-divergence
+  KL(P||Q) = Σᵢⱼ p_{ij} log(p_{ij}/q_{ij})
+  
+  Gradient descent pour ajuster les yᵢ
+
+Résultat :
+  • Points proches en haute dim → proches en 2D
+  • Points éloignés en haute dim → éloignés en 2D
+  • Préserve structure locale (voisinage)
+```
+
 ---
 
 ## 22.1 Multidimensional Scaling (MDS)

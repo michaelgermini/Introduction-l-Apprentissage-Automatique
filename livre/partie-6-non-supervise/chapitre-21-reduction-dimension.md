@@ -4,6 +4,33 @@
 
 La réduction de dimension projette les données dans un espace de dimension réduite tout en préservant l'information.
 
+## 🗺️ Carte Mentale : Réduction de Dimension
+
+```
+                RÉDUCTION DE DIMENSION
+                          │
+        ┌─────────────────┼─────────────────┐
+        │                 │                 │
+    LINÉAIRE         NON-LINÉAIRE       FACTORISATION
+        │                 │                 │
+    ┌───┴───┐         ┌───┴───┐         ┌───┴───┐
+    │       │         │       │         │       │
+  PCA    LDA      t-SNE  UMAP        NMF    ICA
+    │       │         │       │         │       │
+ SVD    Fisher   Manifold Graphe  Positive Independent
+Variance  Discr.  Learning          Components
+```
+
+## 📊 Tableau Comparatif : Méthodes
+
+| **Méthode** | **Type** | **Linéaire** | **Préserve** | **Scalabilité** | **Usage** |
+|------------|---------|-------------|-------------|----------------|-----------|
+| **PCA** | Projection | ✓ Oui | Variance | ✓✓✓ Excellente | Standard, prétraitement |
+| **t-SNE** | Manifold | ✗ Non | Distances locales | ⚠️ Faible | Visualisation 2D/3D |
+| **UMAP** | Graphe | ✗ Non | Structure topologique | ✓✓ Bonne | Visualisation moderne |
+| **LDA** | Discriminant | ✓ Oui | Séparabilité classes | ✓✓ Bonne | Classification |
+| **Autoencoder** | Deep Learning | ✗ Non | Reconstruction | ✓ Moyenne | Représentations |
+
 ---
 
 ## 21.1 Analyse en Composantes Principales (PCA)
